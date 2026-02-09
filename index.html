@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown & JSON Viewer</title>
+    <meta name="description"
+        content="A beautiful viewer for Markdown and JSON files with multiple visualization modes and code access helper">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=6">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+                <span class="logo-icon">📝</span>
+                <span class="logo-text">Dev Viewer</span>
+            </h1>
+            <div class="header-controls">
+                <button id="themeToggle" class="control-btn" title="Toggle Dark Mode">
+                    <span class="icon">🌙</span>
+                </button>
+                <button id="fontSizeDecrease" class="control-btn" title="Decrease Font Size">
+                    <span class="icon">A-</span>
+                </button>
+                <button id="fontSizeIncrease" class="control-btn" title="Increase Font Size">
+                    <span class="icon">A+</span>
+                </button>
+                <button id="downloadBtn" class="control-btn" title="Download as HTML" disabled>
+                    <span class="icon">⬇️</span>
+                </button>
+                <button id="clearBtn" class="control-btn" title="Clear Document" disabled>
+                    <span class="icon">🗑️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Upload Area -->
+        <div id="uploadArea" class="upload-area">
+            <div class="upload-content">
+                <div class="upload-icon">📄</div>
+                <h2 class="upload-title">Drop your Markdown or JSON file here</h2>
+                <p class="upload-subtitle">or click to browse / paste JSON</p>
+                <input type="file" id="fileInput" accept=".md,.markdown,.txt,.json" hidden>
+                <button id="browseBtn" class="browse-btn">Browse Files</button>
+                <button id="pasteJsonBtn" class="browse-btn secondary-btn">Paste JSON</button>
+                <p class="upload-hint">Supports .md, .markdown, .txt, and .json files</p>
+            </div>
+        </div>
+
+        <!-- Markdown Preview -->
+        <div id="previewContainer" class="preview-container hidden">
+            <div class="preview-header">
+                <div class="file-info">
+                    <span class="file-name" id="fileName">Document.md</span>
+                    <span class="file-size" id="fileSize">0 KB</span>
+                </div>
+                <div class="reading-time" id="readingTime">
+                    <span class="icon">⏱️</span>
+                    <span id="readingTimeText">0 min read</span>
+                </div>
+            </div>
+            <article id="markdownContent" class="markdown-content">
+                <!-- Rendered markdown will appear here -->
+            </article>
+        </div>
+
+        <!-- JSON Viewer Layout -->
+        <div id="jsonViewerContainer" class="json-viewer-container hidden">
+            <div class="json-panels">
+                <!-- Left Panel: Raw JSON Input -->
+                <div class="json-panel json-input-panel" id="jsonInputPanel">
+                    <div class="panel-header">
+                        <h3>📝 JSON Input</h3>
+                        <div class="panel-controls">
+                            <button id="autoRepairBtn" class="panel-btn" title="Auto-repair common JSON issues">🔧
+                                Auto-Repair</button>
+                            <button id="formatJsonBtn" class="panel-btn" title="Format JSON">Format</button>
+                            <button id="validateJsonBtn" class="panel-btn" title="Validate JSON">Validate</button>
+                        </div>
+                    </div>
+                    <div class="json-input-wrapper">
+                        <div id="lineNumbers" class="line-numbers"></div>
+                        <textarea id="jsonInput" class="json-input-textarea"
+                            placeholder="Paste your JSON here or upload a .json file..."></textarea>
+                        <div id="errorMarker" class="error-marker hidden"></div>
+                    </div>
+                    <div id="jsonStats" class="json-stats hidden"></div>
+                </div>
+
+                <!-- Resize Handle -->
+                <div class="resize-handle" id="resizeHandle"></div>
+
+                <!-- Middle Panel: Visualization -->
+                <div class="json-panel json-viewer-panel">
+                    <div class="panel-header">
+                        <h3>👁️ Visualization</h3>
+                        <div class="view-mode-switcher">
+                            <button data-mode="tree" class="view-mode-btn active" title="Tree View">🌳 Tree</button>
+                            <button data-mode="prettier" class="view-mode-btn" title="Prettier View">✨ Prettier</button>
+                            <button data-mode="graph" class="view-mode-btn" title="Graph View">🕸️ Graph</button>
+                            <button class="view-mode-btn" data-mode="table">📊 Table</button>
+                        </div>
+                    </div>
+                    <div id="jsonVisualization" class="json-visualization">
+                        <div class="visualization-placeholder">
+                            <p>📊 Your JSON visualization will appear here</p>
+                            <p class="placeholder-hint">Upload a file or paste JSON to get started</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resize Handle 2 (between Visualization and Access Code) -->
+                <div class="resize-handle" id="resizeHandle2"></div>
+
+                <!-- Right Panel: Code Helper -->
+                <div class="json-panel json-code-panel" id="codeHelperPanel">
+                    <div class="panel-header">
+                        <h3>💻 Access Code</h3>
+                        <button id="toggleCodePanel" class="panel-btn toggle-btn" title="Toggle Panel">◀</button>
+                    </div>
+                    <div id="codeHelper" class="code-helper">
+                        <div class="code-helper-placeholder">
+                            <p>🎯 Click on any key in the visualization</p>
+                            <p class="placeholder-hint">See how to access it in JavaScript</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JSON Paste Modal -->
+    <div id="jsonPasteModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Paste JSON Data</h2>
+                <button id="closeModal" class="modal-close">×</button>
+            </div>
+            <textarea id="modalJsonInput" class="modal-textarea" placeholder="Paste your JSON here..."></textarea>
+            <div class="modal-footer">
+                <button id="cancelPaste" class="modal-btn secondary">Cancel</button>
+                <button id="confirmPaste" class="modal-btn primary">Load JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Export Modal -->
+    <div id="csvExportModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📥 Export CSV Options</h3>
+                <button id="closeCsvModal" class="close-btn">✖</button>
+            </div>
+            <div class="modal-body">
+                <p>Choose how nested objects and arrays should be handled:</p>
+
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="csvFormat" value="default" checked>
+                        <div class="radio-content">
+                            <span class="radio-title">Standard (JSON Strings)</span>
+                            <span class="radio-desc">Nested objects remain as JSON strings (e.g.,
+                                <code>{"id":1}</code>). Best for preserving structure.</span>
+                        </div>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="csvFormat" value="flatten">
+                        <div class="radio-content">
+                            <span class="radio-title">Flattened (Destructured)</span>
+                            <span class="radio-desc">Nested properties become separate columns (e.g.,
+                                <code>user.address.city</code>). Best for analysis in Excel.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelCsvExport" class="modal-btn secondary">Cancel</button>
+                <button id="confirmCsvExport" class="modal-btn primary">Download CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Dev Viewer. All rights reserved.</p>
+    </footer>
+
+    <script src="markdown-parser.js"></script>
+    <script src="json-parser.js"></script>
+    <script src="json-repair.js"></script>
+    <script src="json-visualizer.js"></script>
+    <script src="code-helper.js"></script>
+    <script src="resize-handler.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

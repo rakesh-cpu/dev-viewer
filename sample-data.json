@@ -1,0 +1,90 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "address": {
+        "street": "123 Main St",
+        "city": "New York",
+        "state": "NY",
+        "zipCode": "10001",
+        "coordinates": {
+          "lat": 40.7128,
+          "lng": -74.0060
+        }
+      },
+      "roles": ["admin", "user"],
+      "isActive": true,
+      "metadata": {
+        "lastLogin": "2026-01-17T10:30:00Z",
+        "loginCount": 42,
+        "preferences": {
+          "theme": "dark",
+          "notifications": true,
+          "language": "en"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "address": {
+        "street": "456 Oak Ave",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94102",
+        "coordinates": {
+          "lat": 37.7749,
+          "lng": -122.4194
+        }
+      },
+      "roles": ["user"],
+      "isActive": true,
+      "metadata": {
+        "lastLogin": "2026-01-16T15:45:00Z",
+        "loginCount": 28,
+        "preferences": {
+          "theme": "light",
+          "notifications": false,
+          "language": "en"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Bob Johnson",
+      "email": "bob@example.com",
+      "address": {
+        "street": "789 Pine Rd",
+        "city": "Chicago",
+        "state": "IL",
+        "zipCode": "60601",
+        "coordinates": {
+          "lat": 41.8781,
+          "lng": -87.6298
+        }
+      },
+      "roles": ["moderator", "user"],
+      "isActive": false,
+      "metadata": {
+        "lastLogin": "2026-01-10T08:20:00Z",
+        "loginCount": 156,
+        "preferences": {
+          "theme": "dark",
+          "notifications": true,
+          "language": "es"
+        }
+      }
+    }
+  ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 10,
+    "itemsPerPage": 3,
+    "totalItems": 30
+  },
+  "apiVersion": "2.0",
+  "timestamp": "2026-01-17T14:52:00Z"
+}
