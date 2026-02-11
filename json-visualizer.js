@@ -461,6 +461,7 @@ class GraphVisualizer extends BaseVisualizer {
     addPanZoomSupport(svg) {
         let isPanning = false;
         let startPoint = { x: 0, y: 0 };
+        let rafId = null;
         
         svg.addEventListener('mousedown', (e) => {
             // Allow panning unless clicking on a node circle or text
@@ -475,14 +476,19 @@ class GraphVisualizer extends BaseVisualizer {
         
         svg.addEventListener('mousemove', (e) => {
             if (isPanning) {
-                this.panOffset.x = e.clientX - startPoint.x;
-                this.panOffset.y = e.clientY - startPoint.y;
-                this.updateTransform(svg);
+                if (rafId) cancelAnimationFrame(rafId);
+                
+                rafId = requestAnimationFrame(() => {
+                    this.panOffset.x = e.clientX - startPoint.x;
+                    this.panOffset.y = e.clientY - startPoint.y;
+                    this.updateTransform(svg);
+                });
             }
         });
         
         svg.addEventListener('mouseup', () => {
             if (isPanning) {
+                if (rafId) cancelAnimationFrame(rafId);
                 isPanning = false;
                 svg.style.cursor = 'grab';
             }
@@ -490,6 +496,7 @@ class GraphVisualizer extends BaseVisualizer {
         
         svg.addEventListener('mouseleave', () => {
             if (isPanning) {
+                if (rafId) cancelAnimationFrame(rafId);
                 isPanning = false;
                 svg.style.cursor = 'default';
             }
@@ -758,6 +765,7 @@ class GraphVisualizer extends BaseVisualizer {
             // Node dragging
             let isDragging = false;
             let dragStart = { x: 0, y: 0 };
+            let dragRafId = null;
             
             nodeGroup.addEventListener('mousedown', (e) => {
                 if (node.isDraggable) {
@@ -774,19 +782,26 @@ class GraphVisualizer extends BaseVisualizer {
             
             svg.addEventListener('mousemove', (e) => {
                 if (isDragging && node.isDraggable) {
-                    const newX = e.clientX - dragStart.x;
-                    const newY = e.clientY - dragStart.y;
-                    nodeGroup.setAttribute('transform', `translate(${newX}, ${newY})`);
-                    node.x = newX;
-                    node.y = newY;
+                    if (dragRafId) cancelAnimationFrame(dragRafId);
                     
-                    // Update connected links
-                    this.updateNodeLinks(node.id, newX, newY, linksGroup);
+                    dragRafId = requestAnimationFrame(() => {
+                        const newX = e.clientX - dragStart.x;
+                        const newY = e.clientY - dragStart.y;
+                        nodeGroup.setAttribute('transform', `translate(${newX}, ${newY})`);
+                        node.x = newX;
+                        node.y = newY;
+                        
+                        // Update connected links
+                        this.updateNodeLinks(node.id, newX, newY, linksGroup);
+                    });
                 }
             });
             
             svg.addEventListener('mouseup', () => {
-                isDragging = false;
+                if (isDragging) {
+                    if (dragRafId) cancelAnimationFrame(dragRafId);
+                    isDragging = false;
+                }
             });
             
             // Double-click to toggle draggable

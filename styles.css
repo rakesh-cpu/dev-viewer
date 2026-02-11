@@ -9,6 +9,7 @@
     --text-tertiary: #718096;
     --accent-primary: #6366f1;
     --accent-secondary: #8b5cf6;
+    --accent-hover: #4f46e5; /* Added for hover states */
     --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --border-color: #e2e8f0;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -69,6 +70,7 @@
 html {
     font-size: var(--font-size-base);
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -80,6 +82,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 }
 
 /* Font Size Modifiers */
@@ -111,7 +114,7 @@ body.font-xlarge .markdown-body {
 /* ==================== Header ==================== */
 /* ==================== Header ==================== */
 .header {
-    background: var(--bg-secondary);
+    background: #fcf9f1;
     border-bottom: 1px solid var(--border-color);
     padding: var(--spacing-md) var(--spacing-lg);
     position: sticky;
@@ -191,6 +194,434 @@ body.font-xlarge .markdown-body {
     width: 100%;
 }
 
+/* ==================== Landing Page / SEO Sections ==================== */
+.landing-page {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeIn var(--transition-base);
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg) 0;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: var(--spacing-sm);
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.seo-section {
+    margin: var(--spacing-xl) 0;
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.seo-section h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.feature-item h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.feature-item p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.how-it-works-section p {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* refined faq styles */
+.faq-item {
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+    border-color: var(--accent-primary);
+}
+
+.faq-item[open] {
+    background: var(--bg-primary); /* Keep white/dark bg */
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent-secondary);
+}
+
+.faq-item summary {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+    padding-right: 3.5rem; /* Space for icon */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+/* Custom chevron indicator */
+.faq-item summary::after {
+    content: '';
+    position: absolute;
+    right: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: transform 0.3s ease;
+}
+
+.faq-item[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-content {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    border-top: 1px solid transparent;
+    animation: slideDown 0.3s ease-out;
+}
+
+.faq-item[open] .faq-content {
+    border-top-color: var(--border-color);
+}
+
+.faq-content p {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+}
+
+.faq-content p:last-child {
+    margin-bottom: 0;
+}
+
+.faq-content ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.faq-content li {
+    margin-bottom: 0.5rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== ALTERNATIVE UI STYLES (UNCOMMENT TO USE) ==================== */
+/*
+============================================
+FEATURE FLAG: UI_STYLE = "alt"
+To activate alternative UI:
+1. Uncomment this entire CSS section
+2. Comment out/uncomment corresponding HTML sections in index.html
+3. The alternative UI uses a beige/cream theme inspired by the provided designs
+============================================
+
+:root {
+    --bg-alt-primary: #faf8f5;
+    --bg-alt-secondary: #f5f1eb;
+    --bg-alt-card: #ffffff;
+    --text-alt-primary: #1a1a1a;
+    --text-alt-secondary: #6b7280;
+    --accent-alt-orange: #ea580c;
+    --accent-alt-blue: #6366f1;
+    --accent-alt-red: #ef4444;
+    --border-alt: #e5e0d8;
+}
+
+[data-theme="dark"] {
+    --bg-alt-primary: #1a1a1a;
+    --bg-alt-secondary: #2d2d2d;
+    --bg-alt-card: #242424;
+    --text-alt-primary: #f5f1eb;
+    --text-alt-secondary: #9ca3af;
+    --border-alt: #3d3d3d;
+}
+
+.landing-page {
+    background: var(--bg-alt-primary) !important;
+}
+
+.hero-section-alt {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-title-alt {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    color: var(--text-alt-primary);
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+}
+
+.hero-accent {
+    color: var(--accent-alt-orange);
+    text-decoration: underline;
+    text-decoration-thickness: 4px;
+    text-underline-offset: 8px;
+}
+
+.hero-subtitle-alt {
+    font-size: 1.125rem;
+    color: var(--text-alt-secondary);
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.upload-area-alt {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+.upload-content-alt {
+    background: var(--bg-alt-card);
+    border: 3px solid var(--text-alt-primary);
+    border-radius: 32px;
+    padding: 4rem 3rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-content-alt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.upload-icon-alt {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    color: var(--text-alt-secondary);
+}
+
+.upload-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 32px;
+    height: 32px;
+    background: #fbbf24;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 3px solid var(--bg-alt-card);
+}
+
+.upload-title-alt {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-alt-primary);
+    margin-bottom: 1rem;
+}
+
+.upload-subtitle-alt {
+    font-size: 1rem;
+    color: var(--text-alt-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.upload-buttons-alt {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.browse-btn-alt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.browse-btn-alt.primary {
+    background: var(--accent-alt-orange);
+    color: white;
+    border-color: var(--accent-alt-orange);
+}
+
+.browse-btn-alt.primary:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+.browse-btn-alt.secondary {
+    background: transparent;
+    color: var(--text-alt-primary);
+    border-color: var(--text-alt-primary);
+}
+
+.browse-btn-alt.secondary:hover {
+    background: var(--text-alt-primary);
+    color: var(--bg-alt-card);
+}
+
+.browse-btn-alt svg {
+    width: 20px;
+    height: 20px;
+}
+
+.features-section-alt {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.features-title-alt {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-alt-primary);
+    margin-bottom: 3rem;
+}
+
+.features-grid-alt {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.feature-card-alt {
+    background: var(--bg-alt-card);
+    border: 2px solid var(--border-alt);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.feature-card-alt:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--text-alt-primary);
+}
+
+.feature-icon-alt {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card-alt h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-alt-primary);
+    margin-bottom: 0.75rem;
+}
+
+.feature-card-alt p {
+    font-size: 0.95rem;
+    color: var(--text-alt-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .features-grid-alt {
+        grid-template-columns: 1fr;
+    }
+    
+    .upload-content-alt {
+        padding: 3rem 2rem;
+    }
+    
+    .upload-buttons-alt {
+        flex-direction: column;
+    }
+    
+    .browse-btn-alt {
+        width: 100%;
+        justify-content: center;
+    }
+}
+*/
+/* ==================== END ALTERNATIVE UI STYLES ==================== */
+
 /* ==================== Upload Area ==================== */
 .upload-area {
     border: 3px dashed var(--border-color);
@@ -198,11 +629,13 @@ body.font-xlarge .markdown-body {
     padding: var(--spacing-xl);
     text-align: center;
     transition: all var(--transition-base);
-    background: var(--bg-secondary);
-    min-height: 400px;
+    background: var(--bg-primary); /* Changed to primary to pop against secondary bg */
+    min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
 }
 
 .upload-area.dragover {
@@ -573,6 +1006,7 @@ body.font-xlarge .markdown-body {
 /* ==================== Resize Handle ==================== */
 .resize-handle {
     width: 8px;
+    z-index: 20;
     background: var(--border-color);
     cursor: col-resize;
     position: relative;
@@ -669,7 +1103,7 @@ body.font-xlarge .markdown-body {
     background: var(--bg-tertiary);
     color: var(--text-tertiary);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.6;
     text-align: right;
     user-select: none;
@@ -716,7 +1150,7 @@ body.font-xlarge .markdown-body {
     background: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.6;
     resize: none;
     outline: none;
@@ -904,7 +1338,7 @@ body.font-xlarge .markdown-body {
 .json-grid-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 14px;
     background: var(--bg-primary);
     box-shadow: var(--shadow-sm);
 }
@@ -914,7 +1348,7 @@ body.font-xlarge .markdown-body {
     padding: 12px 16px;
     text-align: left;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-secondary);
@@ -1371,6 +1805,21 @@ code {
     border-radius: var(--radius-md);
 }
 
+.graph-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1000;
+    background: var(--bg-primary);
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+}
+
 .graph-fullscreen-btn {
     position: absolute;
     top: 10px;
@@ -1413,10 +1862,11 @@ code {
     box-shadow: var(--shadow-xl);
     border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 600px;
+    width: 90%;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
-    max-height: 85vh;
+    max-height: 90vh;
 }
 
 .modal-header {
@@ -1446,16 +1896,18 @@ code {
     color: var(--text-primary);
 }
 
-.modal-textarea {
+.paste-textarea {
     padding: var(--spacing-md);
     border: none;
     resize: vertical;
-    min-height: 200px;
+    min-height: 400px;
     font-family: var(--font-mono);
     font-size: 0.875rem;
     background: var(--bg-primary);
     color: var(--text-primary);
     outline: none;
+    width: 100%;
+    line-height: 1.5;
 }
 
 .modal-footer {
@@ -1630,4 +2082,114 @@ code {
         font-size: 0.75rem;
         padding: var(--spacing-sm);
     }
+}
+
+/* FAQ Toggle Styles */
+.faq-toggle-btn {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+    margin-bottom: var(--spacing-md);
+    text-align: left;
+}
+
+.faq-toggle-btn:hover {
+    background: var(--bg-tertiary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.faq-toggle-btn .icon {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.faq-toggle-btn.active .icon {
+    transform: rotate(180deg);
+}
+
+.faq-container {
+    transition: opacity 0.3s ease;
+}
+
+.faq-container.hidden {
+    display: none;
+}
+
+/* ==================== JSON Visualization Font Scaling ==================== */
+
+/* Small Font (12px base) */
+body.font-small .tree-view,
+body.font-small .prettier-code,
+body.font-small .json-input-textarea,
+body.font-small .view-mode-btn,
+body.font-small .panel-btn {
+    font-size: 0.75rem; /* 12px */
+}
+
+/* Large Font (18px base) */
+body.font-large .tree-view,
+body.font-large .prettier-code,
+body.font-large .json-input-textarea,
+body.font-large .view-mode-btn,
+body.font-large .panel-btn {
+    font-size: 1.125rem; /* 18px */
+}
+
+/* Extra Large Font (20px base) */
+body.font-xlarge .tree-view,
+body.font-xlarge .prettier-code,
+body.font-xlarge .json-input-textarea,
+body.font-xlarge .view-mode-btn,
+body.font-xlarge .panel-btn {
+    font-size: 1.25rem; /* 20px */
+}
+
+/* Adjustments for Tree Metadata */
+body.font-large .tree-type,
+body.font-large .tree-toggle { font-size: 0.9em; }
+body.font-xlarge .tree-type,
+body.font-xlarge .tree-toggle { font-size: 0.9em; }
+
+/* Adjustments for Table View */
+body.font-large .nested-table { font-size: 14px; }
+body.font-xlarge .nested-table { font-size: 16px; }
+
+body.font-large .nested-table th,
+body.font-large .nested-table td { padding: 10px 14px; }
+body.font-xlarge .nested-table th,
+body.font-xlarge .nested-table td { padding: 12px 16px; }
+
+/* Ensure button visibility */
+.bg-mustard {
+    background-color: #F2CC8F !important;
+}
+
+/* ==================== Easter Egg Animations ==================== */
+.blushing {
+    background-color: #ffb7b2 !important; /* Pastel Pink */
+    transform: scale(1.1) rotate(10deg);
+    border-color: #e2725b !important;
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
 }

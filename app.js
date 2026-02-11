@@ -28,6 +28,7 @@ class ViewerApp {
         // DOM elements
         this.elements = {
             // Common
+            landingPage: document.getElementById('landingPage'),
             uploadArea: document.getElementById('uploadArea'),
             fileInput: document.getElementById('fileInput'),
             browseBtn: document.getElementById('browseBtn'),
@@ -37,6 +38,7 @@ class ViewerApp {
             fontSizeDecrease: document.getElementById('fontSizeDecrease'),
             downloadBtn: document.getElementById('downloadBtn'),
             clearBtn: document.getElementById('clearBtn'),
+            faqToggle: document.getElementById('faqToggleBtn'),
             
             // Markdown
             previewContainer: document.getElementById('previewContainer'),
@@ -138,6 +140,12 @@ class ViewerApp {
         this.elements.themeToggle.addEventListener('click', () => {
             this.toggleTheme();
         });
+
+        if (this.elements.faqToggle) {
+            this.elements.faqToggle.addEventListener('click', () => {
+                this.toggleFaq();
+            });
+        }
 
         this.elements.fontSizeIncrease.addEventListener('click', () => {
             this.increaseFontSize();
@@ -355,7 +363,7 @@ class ViewerApp {
             this.elements.readingTimeText.textContent = `${readingTime} min read`;
             
             // Show markdown preview, hide others
-            this.elements.uploadArea.classList.add('hidden');
+            this.elements.landingPage.classList.add('hidden');
             this.elements.jsonViewerContainer.classList.add('hidden');
             this.elements.previewContainer.classList.remove('hidden');
             
@@ -387,7 +395,7 @@ class ViewerApp {
         const result = this.jsonParser.parse(jsonString);
         
         // Always show the JSON viewer UI
-        this.elements.uploadArea.classList.add('hidden');
+        this.elements.landingPage.classList.add('hidden');
         this.elements.previewContainer.classList.add('hidden');
         this.elements.jsonViewerContainer.classList.remove('hidden');
         
@@ -554,7 +562,7 @@ class ViewerApp {
             this.renderVisualization();
 
             // Show JSON viewer, hide others
-            this.elements.uploadArea.classList.add('hidden');
+            this.elements.landingPage.classList.add('hidden');
             this.elements.previewContainer.classList.add('hidden');
             this.elements.jsonViewerContainer.classList.remove('hidden');
 
@@ -942,9 +950,17 @@ class ViewerApp {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', this.currentTheme);
         
-        // Update button icon
+        if (this.currentTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        // Update button icon (if it exists, for backward compatibility)
         const icon = this.elements.themeToggle.querySelector('.icon');
-        icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
+        if (icon) {
+            icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
+        }
         
         // Save preference
         localStorage.setItem('theme', this.currentTheme);
@@ -964,8 +980,16 @@ class ViewerApp {
             this.currentTheme = savedTheme;
             document.documentElement.setAttribute('data-theme', this.currentTheme);
             
+            if (this.currentTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
             const icon = this.elements.themeToggle.querySelector('.icon');
-            icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
+            if (icon) {
+                icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
+            }
         }
     }
 
@@ -1178,7 +1202,7 @@ class ViewerApp {
         
         this.elements.previewContainer.classList.add('hidden');
         this.elements.jsonViewerContainer.classList.add('hidden');
-        this.elements.uploadArea.classList.remove('hidden');
+        this.elements.landingPage.classList.remove('hidden');
         
         this.elements.fileInput.value = '';
         this.elements.downloadBtn.disabled = true;
@@ -1190,6 +1214,19 @@ class ViewerApp {
      */
     showError(message) {
         alert(message);
+    }
+
+    /**
+     * Toggle FAQ Section Visibility
+     */
+    toggleFaq() {
+        const container = document.getElementById('faqContainer');
+        const btn = this.elements.faqToggle;
+        
+        if (container && btn) {
+            container.classList.toggle('hidden');
+            btn.classList.toggle('active');
+        }
     }
 }
 

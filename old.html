@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Viewer — Free Markdown & JSON Visualizer Tool</title>
+    <meta name="description"
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+    <meta name="keywords"
+        content="markdown viewer, json viewer, online JSON visualizer free, markdown json tool, json formatter, data viewer tool, online JSON tree viewer, markdown inspection tool">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dev-viewer-three.vercel.app/">
+    <meta property="og:title" content="Dev Viewer — Free Markdown & JSON Visualizer Tool">
+    <meta property="og:description"
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://dev-viewer-three.vercel.app/">
+    <meta property="twitter:title" content="Dev Viewer — Free Markdown & JSON Visualizer Tool">
+    <meta property="twitter:description"
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=6">
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Dev Viewer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Dev Viewer is a free online tool to preview, format, validate, and explore Markdown and JSON files in interactive views."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I use the JSON Formatter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It's simple! Paste your messy or minified JSON into the input area, or upload a .json file. Dev Viewer automatically formats it with proper indentation. You can also click the 'Format' button in the toolbar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the Auto-Repair feature work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If you have invalid JSON (e.g., missing quotes, trailing commas), just paste it in. The 'Auto-Repair' button will attempt to fix these common syntax errors automatically."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What visualization modes are available?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We offer four views: Tree View (collapsible explorer), Prettier (clean code), Graph (node-link diagram), and Table (grid view)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data secure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, absolutely. Dev Viewer processes all data locally in your browser. Your files and JSON content are never uploaded to any server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I export the results?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It supports .md, .markdown, .txt, and .json files for upload and instant visualization."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Dev Viewer free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes — no signup or payment required. Just upload your file and start viewing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I export my data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes — you can export JSON data in CSV format or switch between views anytime."
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+                <span class="logo-icon">📝</span>
+                <span class="logo-text">Dev Viewer</span>
+            </h1>
+            <div class="header-controls">
+                <button id="themeToggle" class="control-btn" title="Toggle Dark Mode">
+                    <span class="icon" style="font-size: 1.5rem; line-height: 1;">🌙</span>
+                </button>
+                <button id="fontSizeDecrease" class="control-btn" title="Decrease Font Size">
+                    <span class="icon">A-</span>
+                </button>
+                <button id="fontSizeIncrease" class="control-btn" title="Increase Font Size">
+                    <span class="icon">A+</span>
+                </button>
+                <button id="downloadBtn" class="control-btn" title="Download as HTML" disabled>
+                    <span class="icon">⬇️</span>
+                </button>
+                <button id="clearBtn" class="control-btn" title="Clear Document" disabled>
+                    <span class="icon">🗑️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Landing Page Container -->
+        <div id="landingPage" class="landing-page">
+            <!-- Hero Section & Upload Area -->
+            <!-- ============================================ -->
+            <!-- FEATURE FLAG: UI_STYLE = "current" or "alt" -->
+            <!-- To switch to alternative UI:                -->
+            <!-- 1. Comment out lines marked "CURRENT UI"    -->
+            <!-- 2. Uncomment lines marked "ALTERNATIVE UI"  -->
+            <!-- 3. Update CSS feature flag in styles.css    -->
+            <!-- ============================================ -->
+
+            <!-- CURRENT UI START -->
+            <section class="hero-section">
+                <h1>Visualizer for Developers</h1>
+                <p class="hero-subtitle">Instantly view, format, validate, and explore Markdown and JSON files — all in
+                    your browser with no setup or installation.</p>
+            </section>
+            <!-- CURRENT UI END -->
+
+            <!-- ALTERNATIVE UI START (UNCOMMENT TO USE) -->
+            <!--
+            <section class="hero-section-alt">
+                <h1 class="hero-title-alt">Visualizer for <span class="hero-accent">Developers</span></h1>
+                <p class="hero-subtitle-alt">Instantly view, format, and validate Markdown and JSON files in your browser. No setup, just drop and dive in.</p>
+            </section>
+            -->
+            <!-- ALTERNATIVE UI END -->
+
+            <!-- CURRENT UPLOAD AREA START -->
+            <div id="uploadArea" class="upload-area">
+                <div class="upload-content">
+                    <div class="upload-icon">📄</div>
+                    <h2 class="upload-title">Drop your Markdown or JSON file here</h2>
+                    <p class="upload-subtitle">or click to browse / paste JSON</p>
+                    <input type="file" id="fileInput" accept=".md,.markdown,.txt,.json" hidden>
+                    <button id="browseBtn" class="browse-btn">Browse Files</button>
+                    <button id="pasteJsonBtn" class="browse-btn secondary-btn">Paste JSON</button>
+                    <p class="upload-hint">Supports .md, .markdown, .txt, and .json files</p>
+                </div>
+            </div>
+            <!-- CURRENT UPLOAD AREA END -->
+
+            <!-- ALTERNATIVE UPLOAD AREA START (UNCOMMENT TO USE) -->
+            <!--
+            <div id="uploadArea" class="upload-area-alt">
+                <div class="upload-content-alt">
+                    <div class="upload-icon-alt">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <div class="upload-badge">📁</div>
+                    </div>
+                    <h2 class="upload-title-alt">Drop your files here</h2>
+                    <p class="upload-subtitle-alt">Supports .md, .markdown, .txt, and .json files. Your data stays private and never leaves your browser.</p>
+                    <input type="file" id="fileInput" accept=".md,.markdown,.txt,.json" hidden>
+                    <div class="upload-buttons-alt">
+                        <button id="browseBtn" class="browse-btn-alt primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Browse Files
+                        </button>
+                        <button id="pasteJsonBtn" class="browse-btn-alt secondary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            Paste JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+            -->
+            <!-- ALTERNATIVE UPLOAD AREA END -->
+
+
+            <!-- Features Section -->
+            <!-- CURRENT FEATURES START -->
+            <section class="seo-section features-section">
+                <h2>Why Use Dev Viewer?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Instant Loading</h3>
+                        <p>Pure client-side processing means no latency. Your large files load instantly in
+                            milliseconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Auto Formatting</h3>
+                        <p>Messy JSON? We'll beautify it automatically. Markdown rendered instantly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Local & Secure</h3>
+                        <p>Files are never uploaded to any server. Complete privacy for your sensitive data.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Multiple View Modes</h3>
+                        <p>Tree, Prettier, Graph & Table views for better data understanding.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⬇️</div>
+                        <h3>Download Export</h3>
+                        <p>Export CSV and structured output in seconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍💻</div>
+                        <h3>Developer-Friendly</h3>
+                        <p>View nested JSON structures and access code examples easily.</p>
+                    </div>
+                </div>
+            </section>
+            <!-- CURRENT FEATURES END -->
+
+            <!-- ALTERNATIVE FEATURES START (UNCOMMENT TO USE) -->
+            <!--
+            <section class="seo-section features-section-alt">
+                <h2 class="features-title-alt">Why Use Dev Viewer?</h2>
+                <div class="features-grid-alt">
+                    <div class="feature-card-alt">
+                        <div class="feature-icon-alt" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">⚡</div>
+                        <h3>Instant Loading</h3>
+                        <p>Pure client-side processing means zero latency. Your large files load and format in milliseconds.</p>
+                    </div>
+                    <div class="feature-card-alt">
+                        <div class="feature-icon-alt" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">🎨</div>
+                        <h3>Auto Formatting</h3>
+                        <p>Messy JSON? We'll prettify it automatically. Markdown is rendered with a clean, readable typography.</p>
+                    </div>
+                    <div class="feature-card-alt">
+                        <div class="feature-icon-alt" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">🔒</div>
+                        <h3>Local & Secure</h3>
+                        <p>Files are never uploaded to any server. Complete privacy for your sensitive configuration and data.</p>
+                    </div>
+                </div>
+            </section>
+            -->
+            <!-- ALTERNATIVE FEATURES END -->
+
+            <!-- How It Works Section -->
+            <section class="seo-section how-it-works-section">
+                <h2>How It Works</h2>
+                <p>Upload or paste your Markdown or JSON in the input panel — Dev Viewer instantly parses and shows
+                    interactive visualizations that help you understand your data quickly.</p>
+            </section>
+
+            <!-- FAQ Section -->
+            <!-- FAQ Section -->
+            <!-- FAQ Section (Collapsible) -->
+            <section class="seo-section faq-section">
+                <button id="faqToggleBtn" class="faq-toggle-btn" aria-expanded="false" aria-controls="faqContainer"
+                    title="Show/Hide FAQs">
+                    <span>Frequently Asked Questions</span>
+                    <span class="icon">▼</span>
+                </button>
+
+                <div id="faqContainer" class="faq-container hidden">
+                    <details class="faq-item">
+                        <summary>What is Dev Viewer?</summary>
+                        <div class="faq-content">
+                            <p>Dev Viewer is a free online tool to preview, format, validate, and explore Markdown and
+                                JSON
+                                files in interactive views. It runs entirely in your browser.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How do I use the JSON Formatter?</summary>
+                        <div class="faq-content">
+                            <p>It's simple! <strong>Paste your messy or minified JSON</strong> into the input area, or
+                                upload a .json file. Dev Viewer automatically formats it with proper indentation and
+                                highlights syntax colors.</p>
+                            <p>You can also click the <strong>"Format"</strong> button in the toolbar to re-format code
+                                at
+                                any time.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How does the Auto-Repair feature work?</summary>
+                        <div class="faq-content">
+                            <p>If you have invalid JSON (e.g., missing quotes, trailing commas, or single quotes), just
+                                paste it in. The <strong>"Auto-Repair"</strong> button will attempt to fix these common
+                                syntax errors automatically, rendering your data instantly.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>What visualization modes are available?</summary>
+                        <div class="faq-content">
+                            <p>We offer four powerful views:</p>
+                            <ul>
+                                <li><strong>Tree View:</strong> Collapsible node explorer (default).</li>
+                                <li><strong>Prettier:</strong> Clean, code-colored text view.</li>
+                                <li><strong>Graph:</strong> Interactive node-link diagram for visualizing relationships.
+                                </li>
+                                <li><strong>Table:</strong> Grid view for array data.</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Is my data secure?</summary>
+                        <div class="faq-content">
+                            <p><strong>Yes, absolutely.</strong> Dev Viewer processes all data locally in your browser.
+                                Your
+                                files and JSON content are <em>never</em> uploaded to any server.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can I export the results?</summary>
+                        <div class="faq-content">
+                            <p>Yes. You can download your Markdown as HTML or export your JSON data as a <strong>CSV
+                                    file</strong> (standard or flattened) for use in Excel or Google Sheets.</p>
+                        </div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Is Dev Viewer free?</summary>
+                        <div class="faq-content">
+                            <p>Yes, it is completely free to use with no limits on file size or usage.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+        </div>
+
+        <!-- Markdown Preview -->
+        <div id="previewContainer" class="preview-container hidden">
+            <div class="preview-header">
+                <div class="file-info">
+                    <span class="file-name" id="fileName">Document.md</span>
+                    <span class="file-size" id="fileSize">0 KB</span>
+                </div>
+                <div class="reading-time" id="readingTime">
+                    <span class="icon">⏱️</span>
+                    <span id="readingTimeText">0 min read</span>
+                </div>
+            </div>
+            <article id="markdownContent" class="markdown-content">
+                <!-- Rendered markdown will appear here -->
+            </article>
+        </div>
+
+        <!-- JSON Viewer Layout -->
+        <div id="jsonViewerContainer" class="json-viewer-container hidden">
+            <div class="json-panels">
+                <!-- Left Panel: Raw JSON Input -->
+                <div class="json-panel json-input-panel" id="jsonInputPanel">
+                    <div class="panel-header">
+                        <h3>📝 JSON Input</h3>
+                        <div class="panel-controls">
+                            <button id="autoRepairBtn" class="panel-btn" title="Auto-repair common JSON issues">🔧
+                                Auto-Repair</button>
+                            <button id="formatJsonBtn" class="panel-btn" title="Format JSON">Format</button>
+                            <button id="validateJsonBtn" class="panel-btn" title="Validate JSON">Validate</button>
+                        </div>
+                    </div>
+                    <div class="json-input-wrapper">
+                        <div id="lineNumbers" class="line-numbers"></div>
+                        <textarea id="jsonInput" class="json-input-textarea"
+                            placeholder="Paste your JSON here or upload a .json file..."></textarea>
+                        <div id="errorMarker" class="error-marker hidden"></div>
+                    </div>
+                    <div id="jsonStats" class="json-stats hidden"></div>
+                </div>
+
+                <!-- Resize Handle -->
+                <div class="resize-handle" id="resizeHandle"></div>
+
+                <!-- Middle Panel: Visualization -->
+                <div class="json-panel json-viewer-panel">
+                    <div class="panel-header">
+                        <h3>👁️ Visualization</h3>
+                        <div class="view-mode-switcher">
+                            <button data-mode="tree" class="view-mode-btn active" title="Tree View">🌳 Tree</button>
+                            <button data-mode="prettier" class="view-mode-btn" title="Prettier View">✨ Prettier</button>
+                            <button data-mode="graph" class="view-mode-btn" title="Graph View">🕸️ Graph</button>
+                            <button class="view-mode-btn" data-mode="table">📊 Table</button>
+                        </div>
+                    </div>
+                    <div id="jsonVisualization" class="json-visualization">
+                        <div class="visualization-placeholder">
+                            <p>📊 Your JSON visualization will appear here</p>
+                            <p class="placeholder-hint">Upload a file or paste JSON to get started</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resize Handle 2 (between Visualization and Access Code) -->
+                <div class="resize-handle" id="resizeHandle2"></div>
+
+                <!-- Right Panel: Code Helper -->
+                <div class="json-panel json-code-panel" id="codeHelperPanel">
+                    <div class="panel-header">
+                        <h3>💻 Access Code</h3>
+                        <button id="toggleCodePanel" class="panel-btn toggle-btn" title="Toggle Panel">◀</button>
+                    </div>
+                    <div id="codeHelper" class="code-helper">
+                        <div class="code-helper-placeholder">
+                            <p>🎯 Click on any key in the visualization</p>
+                            <p class="placeholder-hint">See how to access it in JavaScript</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JSON Paste Modal -->
+    <div id="jsonPasteModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Paste JSON Data</h2>
+                <button id="closeModal" class="modal-close">×</button>
+            </div>
+            <textarea id="modalJsonInput" class="modal-textarea" placeholder="Paste your JSON here..."></textarea>
+            <div class="modal-footer">
+                <button id="cancelPaste" class="modal-btn secondary">Cancel</button>
+                <button id="confirmPaste" class="modal-btn primary">Load JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Export Modal -->
+    <div id="csvExportModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📥 Export CSV Options</h3>
+                <button id="closeCsvModal" class="close-btn">✖</button>
+            </div>
+            <div class="modal-body">
+                <p>Choose how nested objects and arrays should be handled:</p>
+
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="csvFormat" value="default" checked>
+                        <div class="radio-content">
+                            <span class="radio-title">Standard (JSON Strings)</span>
+                            <span class="radio-desc">Nested objects remain as JSON strings (e.g.,
+                                <code>{"id":1}</code>). Best for preserving structure.</span>
+                        </div>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="csvFormat" value="flatten">
+                        <div class="radio-content">
+                            <span class="radio-title">Flattened (Destructured)</span>
+                            <span class="radio-desc">Nested properties become separate columns (e.g.,
+                                <code>user.address.city</code>). Best for analysis in Excel.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelCsvExport" class="modal-btn secondary">Cancel</button>
+                <button id="confirmCsvExport" class="modal-btn primary">Download CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Dev Viewer. All rights reserved.</p>
+    </footer>
+
+    <script src="markdown-parser.js"></script>
+    <script src="json-parser.js"></script>
+    <script src="json-repair.js"></script>
+    <script src="json-visualizer.js"></script>
+    <script src="code-helper.js"></script>
+    <script src="resize-handler.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

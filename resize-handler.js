@@ -63,29 +63,36 @@ class ResizeHandler {
     resize(e) {
         if (!this.isResizing) return;
 
-        const delta = e.clientX - this.startX;
-        
-        if (this.activeHandle === 1) {
-            // Resize input panel - allow full range
-            const newWidth = this.startWidth + delta;
-            const containerWidth = this.inputPanel.parentElement.offsetWidth;
-            const percentage = (newWidth / containerWidth) * 100;
-            
-            // Allow full range from 5% to 95% (small buffer for usability)
-            if (percentage >= 5 && percentage <= 95) {
-                this.inputPanel.style.width = `${percentage}%`;
-            }
-        } else if (this.activeHandle === 2) {
-            // Resize visualization and code panels - allow full range
-            const newViewerWidth = this.startWidth + delta;
-            const newCodeWidth = this.startWidth2 - delta;
-            
-            // Allow very small minimum widths (50px) for maximum flexibility
-            if (newViewerWidth >= 50 && newCodeWidth >= 50) {
-                this.viewerPanel.style.width = `${newViewerWidth}px`;
-                this.codePanel.style.width = `${newCodeWidth}px`;
-            }
+        // Use requestAnimationFrame for smoother resizing
+        if (this.rafId) {
+            cancelAnimationFrame(this.rafId);
         }
+
+        this.rafId = requestAnimationFrame(() => {
+            const delta = e.clientX - this.startX;
+            
+            if (this.activeHandle === 1) {
+                // Resize input panel - allow full range
+                const newWidth = this.startWidth + delta;
+                const containerWidth = this.inputPanel.parentElement.offsetWidth;
+                const percentage = (newWidth / containerWidth) * 100;
+                
+                // Allow full range from 5% to 95% (small buffer for usability)
+                if (percentage >= 5 && percentage <= 95) {
+                    this.inputPanel.style.width = `${percentage}%`;
+                }
+            } else if (this.activeHandle === 2) {
+                // Resize visualization and code panels - allow full range
+                const newViewerWidth = this.startWidth + delta;
+                const newCodeWidth = this.startWidth2 - delta;
+                
+                // Allow very small minimum widths (50px) for maximum flexibility
+                if (newViewerWidth >= 50 && newCodeWidth >= 50) {
+                    this.viewerPanel.style.width = `${newViewerWidth}px`;
+                    this.codePanel.style.width = `${newCodeWidth}px`;
+                }
+            }
+        });
     }
 
     stopResize() {

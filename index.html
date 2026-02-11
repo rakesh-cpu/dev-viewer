@@ -1,60 +1,377 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown & JSON Viewer</title>
+    <title>Dev Viewer — Modern Markdown & JSON Visualizer</title>
     <meta name="description"
-        content="A beautiful viewer for Markdown and JSON files with multiple visualization modes and code access helper">
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+    <meta name="keywords"
+        content="markdown viewer, json viewer, online JSON visualizer free, markdown json tool, json formatter, data viewer tool, online JSON tree viewer, markdown inspection tool">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dev-viewer-three.vercel.app/">
+    <meta property="og:title" content="Dev Viewer — Free Markdown & JSON Visualizer Tool">
+    <meta property="og:description"
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://dev-viewer-three.vercel.app/">
+    <meta property="twitter:title" content="Dev Viewer — Free Markdown & JSON Visualizer Tool">
+    <meta property="twitter:description"
+        content="Dev Viewer is a free online Markdown & JSON visualizer. Upload files and instantly preview, format, validate, and visualize your data.">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=6">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
 
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1 class="logo">
-                <span class="logo-icon">📝</span>
-                <span class="logo-text">Dev Viewer</span>
-            </h1>
-            <div class="header-controls">
-                <button id="themeToggle" class="control-btn" title="Toggle Dark Mode">
-                    <span class="icon">🌙</span>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#E2725B",
+                        sage: "#84A59D",
+                        mustard: "#F2CC8F",
+                        "background-light": "#FCF9F1",
+                        "background-dark": "#1A1917",
+                        "card-light": "#FFFFFF",
+                        "card-dark": "#262522",
+                    },
+                    fontFamily: {
+                        display: ["Plus Jakarta Sans", "sans-serif"],
+                        body: ["Outfit", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        'xl': "1.5rem",
+                        '2xl': "2.5rem",
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- Original Styles (for viewer components) -->
+    <link rel="stylesheet" href="styles.css?v=7">
+
+    <style>
+        html,
+        body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .main-content {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .neo-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .dark .neo-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(226, 114, 91, 0.4);
+        }
+
+        .neo-shadow-sm {
+            box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        .neo-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+        }
+
+        /* Override landing page background */
+        .landing-page {
+            background: #FCF9F1 !important;
+        }
+
+        .dark .landing-page {
+            background: #1A1917 !important;
+        }
+    </style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BYRYTN12Q3"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-BYRYTN12Q3');
+</script>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-stone-800 dark:text-stone-200 transition-colors duration-300">
+
+    <!-- Neo Header (shown on all pages) -->
+    <header
+        class="header neo-header bg-background-light dark:bg-background-dark border-b-2 border-black dark:border-stone-700 transition-colors duration-300">
+        <nav class="w-full max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 group cursor-pointer">
+                <div
+                    class="w-10 h-10 bg-primary neo-shadow-sm border-2 border-black flex items-center justify-center rounded-lg group-hover:-rotate-6 transition-transform">
+                    <span class="material-symbols-rounded text-white">code</span>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight">Dev Viewer</span>
+            </div>
+            <div class="flex items-center gap-2 md:gap-4">
+                <button id="themeToggle"
+                    class="w-11 h-11 border-2 border-black bg-white dark:bg-stone-800 neo-shadow-sm rounded-xl hover:bg-stone-50 dark:hover:bg-stone-700 transition-all flex items-center justify-center p-0"
+                    title="Toggle Dark Mode">
+                    <span class="icon text-2xl leading-none filter grayscale-0">🌙</span>
                 </button>
-                <button id="fontSizeDecrease" class="control-btn" title="Decrease Font Size">
-                    <span class="icon">A-</span>
+
+                <div class="flex gap-2">
+                    <button id="fontSizeDecrease"
+                        class="w-11 h-11 text-lg font-bold border-2 border-black bg-mustard neo-shadow-sm rounded-xl hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center p-0"
+                        title="Decrease Font Size">
+                        A-
+                    </button>
+                    <button id="fontSizeIncrease"
+                        class="w-11 h-11 text-lg font-bold border-2 border-black bg-mustard neo-shadow-sm rounded-xl hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center p-0"
+                        title="Increase Font Size">
+                        A+
+                    </button>
+                </div>
+
+                <button id="downloadBtn"
+                    class="w-11 h-11 border-2 border-black bg-sage text-white neo-shadow-sm rounded-xl hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled title="Download as HTML">
+                    <span class="icon text-xl leading-none">⬇️</span>
                 </button>
-                <button id="fontSizeIncrease" class="control-btn" title="Increase Font Size">
-                    <span class="icon">A+</span>
-                </button>
-                <button id="downloadBtn" class="control-btn" title="Download as HTML" disabled>
-                    <span class="icon">⬇️</span>
-                </button>
-                <button id="clearBtn" class="control-btn" title="Clear Document" disabled>
-                    <span class="icon">🗑️</span>
+                <button id="clearBtn"
+                    class="w-11 h-11 border-2 border-black bg-primary text-white neo-shadow-sm rounded-xl hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex items-center justify-center p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled title="Clear Document">
+                    <span class="icon text-xl leading-none">🗑️</span>
                 </button>
             </div>
-        </div>
+        </nav>
     </header>
+
+
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Upload Area -->
-        <div id="uploadArea" class="upload-area">
-            <div class="upload-content">
-                <div class="upload-icon">📄</div>
-                <h2 class="upload-title">Drop your Markdown or JSON file here</h2>
-                <p class="upload-subtitle">or click to browse / paste JSON</p>
-                <input type="file" id="fileInput" accept=".md,.markdown,.txt,.json" hidden>
-                <button id="browseBtn" class="browse-btn">Browse Files</button>
-                <button id="pasteJsonBtn" class="browse-btn secondary-btn">Paste JSON</button>
-                <p class="upload-hint">Supports .md, .markdown, .txt, and .json files</p>
+        <!-- Landing Page Container -->
+        <div id="landingPage" class="landing-page">
+            <div class="max-w-5xl mx-auto px-6 pt-12 pb-24">
+                <!-- Hero Section -->
+                <div class="text-center mb-16">
+                    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.1]">
+                        Visualizer for <span
+                            class="text-primary underline decoration-sage decoration-4 underline-offset-8">Developers</span>
+                    </h1>
+                    <p class="text-xl text-stone-600 dark:text-stone-400 max-w-2xl mx-auto font-medium">
+                        Instantly view, format, and validate Markdown and JSON files in your browser. No setup, just
+                        drop and dive in.
+                    </p>
+                </div>
+
+                <!-- Upload Area -->
+                <div class="relative group">
+                    <div class="absolute -top-6 -left-6 w-24 h-24 bg-sage rounded-full blur-3xl opacity-20 -z-10"></div>
+                    <div
+                        class="absolute -bottom-6 -right-6 w-32 h-32 bg-mustard rounded-full blur-3xl opacity-20 -z-10">
+                    </div>
+
+                    <div id="uploadArea"
+                        class="bg-white dark:bg-card-dark border-3 border-black rounded-2xl p-12 md:p-20 neo-shadow relative overflow-hidden">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="mb-10 relative">
+                                <div
+                                    class="w-32 h-32 bg-sage/10 dark:bg-sage/20 rounded-full flex items-center justify-center animate-pulse">
+                                    <div
+                                        class="w-24 h-24 bg-white dark:bg-stone-800 border-2 border-black rounded-xl neo-shadow-sm flex items-center justify-center transform -rotate-3">
+                                        <span class="material-symbols-rounded text-5xl text-primary">description</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute -bottom-2 -right-2 bg-mustard border-2 border-black p-2 rounded-lg neo-shadow-sm">
+                                    <span class="material-symbols-rounded text-black text-xl">add</span>
+                                </div>
+                            </div>
+
+                            <h2 class="text-3xl font-bold mb-4">Drop your files here</h2>
+                            <p class="text-stone-500 dark:text-stone-400 mb-10 max-w-sm">
+                                Supports .md, .markdown, .txt, and .json files.
+                                Your data stays private and never leaves your browser.
+                            </p>
+
+                            <input type="file" id="fileInput" accept=".md,.markdown,.txt,.json" hidden>
+
+                            <div class="flex flex-wrap gap-6 justify-center">
+                                <button id="browseBtn"
+                                    class="neo-button px-10 py-4 bg-primary text-white border-2 border-black font-bold text-lg rounded-xl neo-shadow flex items-center gap-3 transition-all hover:bg-opacity-90 active:translate-y-1 active:shadow-none">
+                                    <span class="material-symbols-rounded">folder_open</span>
+                                    Browse Files
+                                </button>
+                                <button id="pasteJsonBtn"
+                                    class="neo-button px-10 py-4 bg-white dark:bg-stone-800 border-2 border-black font-bold text-lg rounded-xl neo-shadow flex items-center gap-3 transition-all hover:bg-stone-50 dark:hover:bg-stone-700 active:translate-y-1 active:shadow-none">
+                                    <span class="material-symbols-rounded text-sage">content_paste</span>
+                                    Paste JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="mt-32">
+                    <h2 class="text-3xl font-bold text-center mb-16">Why Use Dev Viewer?</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div
+                            class="p-8 bg-white dark:bg-card-dark border-2 border-black rounded-2xl neo-shadow-sm hover:-translate-y-1 transition-transform">
+                            <div
+                                class="w-14 h-14 bg-mustard border-2 border-black rounded-xl flex items-center justify-center mb-6">
+                                <span class="material-symbols-rounded text-black">speed</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Instant Loading</h3>
+                            <p class="text-stone-600 dark:text-stone-400 leading-relaxed">
+                                Pure client-side processing means zero latency. Your large files load and format in
+                                milliseconds.
+                            </p>
+                        </div>
+
+                        <div
+                            class="p-8 bg-white dark:bg-card-dark border-2 border-black rounded-2xl neo-shadow-sm hover:-translate-y-1 transition-transform">
+                            <div
+                                class="w-14 h-14 bg-sage border-2 border-black rounded-xl flex items-center justify-center mb-6">
+                                <span class="material-symbols-rounded text-white">auto_fix_high</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Auto Formatting</h3>
+                            <p class="text-stone-600 dark:text-stone-400 leading-relaxed">
+                                Messy JSON? We'll prettify it automatically. Markdown is rendered with a clean, readable
+                                typography.
+                            </p>
+                        </div>
+
+                        <div
+                            class="p-8 bg-white dark:bg-card-dark border-2 border-black rounded-2xl neo-shadow-sm hover:-translate-y-1 transition-transform">
+                            <div
+                                class="w-14 h-14 bg-primary border-2 border-black rounded-xl flex items-center justify-center mb-6">
+                                <span class="material-symbols-rounded text-white">security</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Local & Secure</h3>
+                            <p class="text-stone-600 dark:text-stone-400 leading-relaxed">
+                                Files are never uploaded to any server. Complete privacy for your sensitive
+                                configuration and data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="mt-32">
+                    <button id="faqToggleBtn" class="faq-toggle-btn" aria-expanded="false" aria-controls="faqContainer"
+                        title="Show/Hide FAQs">
+                        <span>Frequently Asked Questions</span>
+                        <span class="icon">▼</span>
+                    </button>
+
+                    <div id="faqContainer" class="faq-container hidden">
+                        <details class="faq-item">
+                            <summary>What is Dev Viewer?</summary>
+                            <div class="faq-content">
+                                <p>Dev Viewer is a free online tool to preview, format, validate, and explore Markdown
+                                    and JSON
+                                    files in interactive views. It runs entirely in your browser.</p>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>How do I use the JSON Formatter?</summary>
+                            <div class="faq-content">
+                                <p>It's simple! <strong>Paste your messy or minified JSON</strong> into the input area,
+                                    or
+                                    upload a .json file. Dev Viewer automatically formats it with proper indentation and
+                                    highlights syntax colors.</p>
+                                <p>You can also click the <strong>"Format"</strong> button in the toolbar to re-format
+                                    code at
+                                    any time.</p>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>How does the Auto-Repair feature work?</summary>
+                            <div class="faq-content">
+                                <p>If you have invalid JSON (e.g., missing quotes, trailing commas, or single quotes),
+                                    just
+                                    paste it in. The <strong>"Auto-Repair"</strong> button will attempt to fix these
+                                    common
+                                    syntax errors automatically, rendering your data instantly.</p>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>What visualization modes are available?</summary>
+                            <div class="faq-content">
+                                <p>We offer four powerful views:</p>
+                                <ul>
+                                    <li><strong>Tree View:</strong> Collapsible node explorer (default).</li>
+                                    <li><strong>Prettier:</strong> Clean, code-colored text view.</li>
+                                    <li><strong>Graph:</strong> Interactive node-link diagram for visualizing
+                                        relationships.
+                                    </li>
+                                    <li><strong>Table:</strong> Grid view for array data.</li>
+                                </ul>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>Is my data secure?</summary>
+                            <div class="faq-content">
+                                <p><strong>Yes, absolutely.</strong> Dev Viewer processes all data locally in your
+                                    browser. Your
+                                    files and JSON content are <em>never</em> uploaded to any server.</p>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>Can I export the results?</summary>
+                            <div class="faq-content">
+                                <p>Yes. You can download your Markdown as HTML or export your JSON data as a <strong>CSV
+                                        file</strong> (standard or flattened) for use in Excel or Google Sheets.</p>
+                            </div>
+                        </details>
+
+                        <details class="faq-item">
+                            <summary>Is Dev Viewer free?</summary>
+                            <div class="faq-content">
+                                <p>Yes, it is completely free to use with no limits on file size or usage.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -92,24 +409,25 @@
                     <div class="json-input-wrapper">
                         <div id="lineNumbers" class="line-numbers"></div>
                         <textarea id="jsonInput" class="json-input-textarea"
-                            placeholder="Paste your JSON here or upload a .json file..."></textarea>
-                        <div id="errorMarker" class="error-marker hidden"></div>
+                            placeholder="Paste your JSON here..."></textarea>
                     </div>
-                    <div id="jsonStats" class="json-stats hidden"></div>
+                    <div id="jsonStats" class="json-stats hidden">
+                        <span id="statsText"></span>
+                    </div>
                 </div>
 
-                <!-- Resize Handle -->
+                <!-- Resize Handle 1 -->
                 <div class="resize-handle" id="resizeHandle"></div>
 
                 <!-- Middle Panel: Visualization -->
-                <div class="json-panel json-viewer-panel">
+                <div class="json-panel json-viewer-panel" id="jsonViewerPanel">
                     <div class="panel-header">
-                        <h3>👁️ Visualization</h3>
+                        <h3 id="viewerTitle">📊 Visualization</h3>
                         <div class="view-mode-switcher">
-                            <button data-mode="tree" class="view-mode-btn active" title="Tree View">🌳 Tree</button>
-                            <button data-mode="prettier" class="view-mode-btn" title="Prettier View">✨ Prettier</button>
-                            <button data-mode="graph" class="view-mode-btn" title="Graph View">🕸️ Graph</button>
-                            <button class="view-mode-btn" data-mode="table">📊 Table</button>
+                            <button class="view-mode-btn active" data-mode="tree">Tree</button>
+                            <button class="view-mode-btn" data-mode="prettier">Prettier</button>
+                            <button class="view-mode-btn" data-mode="graph">Graph</button>
+                            <button class="view-mode-btn" data-mode="table">Table</button>
                         </div>
                     </div>
                     <div id="jsonVisualization" class="json-visualization">
@@ -120,16 +438,18 @@
                     </div>
                 </div>
 
-                <!-- Resize Handle 2 (between Visualization and Access Code) -->
+                <!-- Resize Handle 2 -->
                 <div class="resize-handle" id="resizeHandle2"></div>
 
                 <!-- Right Panel: Code Helper -->
                 <div class="json-panel json-code-panel" id="codeHelperPanel">
                     <div class="panel-header">
-                        <h3>💻 Access Code</h3>
-                        <button id="toggleCodePanel" class="panel-btn toggle-btn" title="Toggle Panel">◀</button>
+                        <h3>💻 Code Helper</h3>
+                        <button id="toggleCodePanel" class="panel-btn" title="Toggle Code Panel">
+                            <span class="icon">↔️</span>
+                        </button>
                     </div>
-                    <div id="codeHelper" class="code-helper">
+                    <div id="codeHelper" class="code-helper-content">
                         <div class="code-helper-placeholder">
                             <p>🎯 Click on any key in the visualization</p>
                             <p class="placeholder-hint">See how to access it in JavaScript</p>
@@ -140,14 +460,16 @@
         </div>
     </main>
 
-    <!-- JSON Paste Modal -->
+    <!-- Paste JSON Modal -->
     <div id="jsonPasteModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>📋 Paste JSON Data</h2>
-                <button id="closeModal" class="modal-close">×</button>
+                <h2>📋 Paste JSON</h2>
+                <button id="closeModal" class="modal-close">✕</button>
             </div>
-            <textarea id="modalJsonInput" class="modal-textarea" placeholder="Paste your JSON here..."></textarea>
+            <div class="modal-body">
+                <textarea id="modalJsonInput" class="paste-textarea" placeholder="Paste your JSON here..."></textarea>
+            </div>
             <div class="modal-footer">
                 <button id="cancelPaste" class="modal-btn secondary">Cancel</button>
                 <button id="confirmPaste" class="modal-btn primary">Load JSON</button>
@@ -159,23 +481,22 @@
     <div id="csvExportModal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📥 Export CSV Options</h3>
-                <button id="closeCsvModal" class="close-btn">✖</button>
+                <h2>📥 Export to CSV</h2>
+                <button id="closeCsvModal" class="modal-close">✕</button>
             </div>
             <div class="modal-body">
-                <p>Choose how nested objects and arrays should be handled:</p>
-
+                <p class="modal-description">Choose how you want to export your JSON data:</p>
                 <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="csvFormat" value="default" checked>
+                    <label class="radio-option">
+                        <input type="radio" name="csvFormat" value="standard" checked>
                         <div class="radio-content">
-                            <span class="radio-title">Standard (JSON Strings)</span>
-                            <span class="radio-desc">Nested objects remain as JSON strings (e.g.,
-                                <code>{"id":1}</code>). Best for preserving structure.</span>
+                            <span class="radio-title">Standard (Nested)</span>
+                            <span class="radio-desc">Nested objects remain as JSON strings. Best for preserving
+                                structure.</span>
                         </div>
                     </label>
-                    <label class="radio-label">
-                        <input type="radio" name="csvFormat" value="flatten">
+                    <label class="radio-option">
+                        <input type="radio" name="csvFormat" value="flattened">
                         <div class="radio-content">
                             <span class="radio-title">Flattened (Destructured)</span>
                             <span class="radio-desc">Nested properties become separate columns (e.g.,
@@ -192,9 +513,48 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p>© 2026 Dev Viewer. All rights reserved.</p>
+    <footer class="border-t-3 border-black bg-stone-100 dark:bg-stone-900 py-12">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-primary border-2 border-black flex items-center justify-center rounded-lg">
+                    <span class="material-symbols-rounded text-white text-sm">code</span>
+                </div>
+                <span class="font-bold">Dev Viewer</span>
+            </div>
+            <!-- <div class="flex gap-8 text-sm font-semibold">
+                <a class="hover:text-primary transition-colors" href="#">Documentation</a>
+                <a class="hover:text-primary transition-colors" href="#">Privacy</a>
+                <a class="hover:text-primary transition-colors" href="#">Github</a>
+            </div> -->
+            <p class="text-sm text-stone-500 dark:text-stone-400">
+                © 2026 Built with ❤️ for developers.
+            </p>
+        </div>
     </footer>
+
+    <!-- Floating Button (Easter Egg) -->
+    <button id="easterEggBtn"
+        style="z-index: 10000 !important; transform: translateX(calc(50% - 50px)) translateY(calc(-50% + 380px));"
+        class="fixed top-1/2 right-6 w-16 h-16 bg-mustard border-2 border-black rounded-full neo-shadow flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
+        <span id="easterEggIcon"
+            class="material-symbols-rounded text-black text-2xl group-hover:rotate-12 transition-transform">sentiment_satisfied</span>
+    </button>
+
+    <!-- Meme Modal -->
+    <div id="memeModal" class="modal hidden" style="z-index: 9999;">
+        <div class="modal-content relative bg-white dark:bg-card-dark border-4 border-black p-6 rounded-xl neo-shadow flex flex-col items-center justify-center"
+            style="max-width: 500px; width: 90%; min-height: 300px;">
+            <button id="closeMemeModal"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-red-400 text-white border-2 border-black rounded-full hover:scale-110 transition-transform font-bold">✕</button>
+
+            <h2 class="text-3xl font-extrabold mb-6 font-display text-center transform -rotate-2">🎉 SURPRISE! 🎉</h2>
+            <div class="bg-black p-2 rounded-lg neo-shadow-sm mb-4 transform rotate-1">
+                <img id="memeImage" src="" alt="Coding Meme" class="w-full h-auto rounded border-2 border-white"
+                    style="max-height: 400px; object-fit: contain;">
+            </div>
+            <p class="text-center font-bold italic text-lg mt-2 text-stone-600 dark:text-stone-300">"!!!!!"</p>
+        </div>
+    </div>
 
     <script src="markdown-parser.js"></script>
     <script src="json-parser.js"></script>
@@ -203,6 +563,28 @@
     <script src="code-helper.js"></script>
     <script src="resize-handler.js"></script>
     <script src="app.js"></script>
+    <script src="easter-egg.js"></script>
+
+    <script>
+        // Sync theme toggle buttons
+        const themeToggle1 = document.getElementById('themeToggle');
+        const themeToggle2 = document.getElementById('themeToggle2');
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        if (themeToggle1) themeToggle1.addEventListener('click', toggleTheme);
+        if (themeToggle2) themeToggle2.addEventListener('click', toggleTheme);
+
+        // Sync download buttons
+        const downloadBtn1 = document.getElementById('downloadBtn');
+        const downloadBtn2 = document.getElementById('downloadBtn2');
+
+        // Sync clear buttons
+        const clearBtn1 = document.getElementById('clearBtn');
+        const clearBtn2 = document.getElementById('clearBtn2');
+    </script>
 </body>
 
 </html>

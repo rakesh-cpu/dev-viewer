@@ -102,9 +102,7 @@ class MarkdownParser {
         return text.replace(/[&<>"']/g, m => map[m]);
     }
 
-    /**
-     * Store code blocks temporarily to protect them
-     */
+    
     parseCodeBlocks(text) {
         this.codeBlocks = [];
         let index = 0;
