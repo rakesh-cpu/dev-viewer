@@ -1233,12 +1233,23 @@ To activate alternative UI:
 }
 
 /* ==================== Code Helper Styles ==================== */
+.code-helper-content {
+    flex: 1;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    padding: var(--spacing-md);
+    background: var(--bg-primary);
+    min-height: 0;
+    height: 100%;
+}
+
 .code-helper {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto !important;
     overflow-x: hidden;
     padding: var(--spacing-md);
     background: var(--bg-primary);
+    max-height: calc(100vh - 200px);
 }
 
 .code-examples {

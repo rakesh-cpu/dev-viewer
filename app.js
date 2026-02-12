@@ -33,6 +33,7 @@ class ViewerApp {
             fileInput: document.getElementById('fileInput'),
             browseBtn: document.getElementById('browseBtn'),
             pasteJsonBtn: document.getElementById('pasteJsonBtn'),
+            pasteJsonBtn2: document.getElementById('pasteJsonBtn2'),
             themeToggle: document.getElementById('themeToggle'),
             fontSizeIncrease: document.getElementById('fontSizeIncrease'),
             fontSizeDecrease: document.getElementById('fontSizeDecrease'),
@@ -115,6 +116,9 @@ class ViewerApp {
 
         // Paste JSON button
         this.elements.pasteJsonBtn.addEventListener('click', () => {
+            this.showPasteModal();
+        });
+        this.elements.pasteJsonBtn2.addEventListener('click', () => {
             this.showPasteModal();
         });
 

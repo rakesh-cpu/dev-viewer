@@ -2,11 +2,10 @@
  * Easter Egg: The Blushing Meme Button
  * 
  * Interaction Logic:
- * - Hovers 1-4: Progressive emojis (Blush -> Happy -> etc.)
- * - Hover 5: "Stop" emoji + Shake effect.
+ * - Hovers 1-5: Progressive emojis (Blush -> Happy -> etc.)
+ * - Hovers > 5: "Run Away" mode (Random jumps to avoid capture).
  * - Clicks 1-4: Progressive emojis.
- * - Click 5: "Stop" emoji + Shake.
- * - Create condition: After 5 Hovers AND 5 Clicks -> Unlock Meme Modal.
+ * - Click 5: Unlock Meme Modal.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let hoverCount = 0;
     let clickCount = 0;
 
-    // Progression Emojis (User can replace these)
-    const hoverEmojis = ["☺️", "🤭", "🫣", "🫠"]; 
-    const clickEmojis = ["👆", "👊", "🖐️", "✋"];
-    const stopEmoji = "🛑";
+    // Progression Emojis
+    const hoverEmojis = ["☺️", "🤭", "🫣", "🫠", "😵‍💫"]; 
+    const clickEmojis = ["👆", "👊", "🖐️", "✋", "🎉"];
+    const catchMeEmoji = "🏃";
 
     // Meme Collection
     const memes = [
@@ -52,56 +51,74 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.remove('blushing');
             btn.classList.remove('shake');
             
-            // Restore Material Icon (Default state)
-            if (wasMaterial) {
-                icon.style.fontFamily = '';
-                icon.classList.add('material-symbols-rounded');
+            // Should we revert to default icon? 
+            // Only if NOT running away (we want to keep the runner emoji if running)
+            if (hoverCount <= 5) {
+                if (wasMaterial) {
+                    icon.style.fontFamily = '';
+                    icon.classList.add('material-symbols-rounded');
+                }
+                icon.textContent = 'sentiment_satisfied';
             }
-            icon.textContent = 'sentiment_satisfied';
         }, 600);
+    };
+
+    // Run Away Logic
+    const runAway = () => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const btnRect = btn.getBoundingClientRect();
+        
+        // Ensure the button stays somewhat within the viewport but moves significantly
+        // Margin to keep it away from edges
+        const margin = 50; 
+        
+        const maxLeft = viewportWidth - btnRect.width - margin;
+        const maxTop = viewportHeight - btnRect.height - margin;
+        
+        const newLeft = margin + Math.random() * (maxLeft - margin);
+        const newTop = margin + Math.random() * (maxTop - margin);
+        
+        btn.style.position = 'fixed';
+        btn.style.left = `${newLeft}px`;
+        btn.style.top = `${newTop}px`;
+        btn.style.bottom = 'auto';
+        btn.style.right = 'auto';
+        
+        // Show runner emoji
+        showFeedback(catchMeEmoji, false);
     };
 
     // Hover Interaction
     btn.addEventListener('mouseenter', () => {
         hoverCount++;
         
-        if (hoverCount <= 4) {
+        if (hoverCount <= 5) {
             // Show progressive emoji
             const emoji = hoverEmojis[hoverCount - 1] || hoverEmojis[0];
             showFeedback(emoji);
-        } else if (hoverCount === 5) {
-            // Show Stop + Shake
-            showFeedback(stopEmoji, true);
         } else {
-            // Keep shaking on subsequent hovers
-            btn.classList.add('shake');
-            setTimeout(() => btn.classList.remove('shake'), 500);
+            // Run Away!
+            runAway();
         }
     });
 
     // Click Interaction
-    // Supports mouse click and touch (touchend fires click usually suitable for buttons)
     btn.addEventListener('click', () => {
         clickCount++;
 
         // Visual Feedback for Clicks
-        if (clickCount <= 4) {
+        if (clickCount < 5) {
              const emoji = clickEmojis[clickCount - 1] || clickEmojis[0];
              showFeedback(emoji);
         } else if (clickCount === 5) {
-             showFeedback(stopEmoji, true);
-        }
-
-        // Unlock Condition: > 5 Hovers AND > 5 Clicks (Triggers on 6th interaction+)
-        if (hoverCount >= 5 && clickCount >= 5) {
-             // Slight delay to let the feedback finish? Or immediate?
-             // Triggers immediately to reward persistence
-             setTimeout(() => {
-                 showMeme();
-                 // Reset counts
-                 hoverCount = 0;
-                 clickCount = 0;
-             }, 300);
+             // Unlock Meme Modal
+             showMeme();
+             // Reset counts optional? Let's keep them enjoying the memes.
+             // clickCount = 0; 
+        } else {
+            // > 5 clicks, just show another meme
+             showMeme();
         }
     });
 
@@ -109,6 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomMeme = memes[Math.floor(Math.random() * memes.length)];
         if (memeImg) {
             memeImg.src = randomMeme;
+            
+            // Random rotate title
+            const title = modal.querySelector('h2');
+            if(title) {
+                const titles = ["YOU FOUND IT!", "SECRETS UNLOCKED!", "MEME TIME!", "CODING BREAK!"];
+                title.textContent = titles[Math.floor(Math.random() * titles.length)];
+            }
+            
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
         }
