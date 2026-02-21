@@ -9,13 +9,13 @@ class ViewerApp {
         this.markdownParser = new MarkdownParser();
         this.jsonParser = new JSONParser();
         this.codeHelper = new CodeHelper();
-        
+
         // Initialize visualizers
         this.treeVisualizer = new TreeVisualizer();
         this.prettierVisualizer = new PrettierVisualizer();
         this.graphVisualizer = new GraphVisualizer();
         this.tableVisualizer = new TableVisualizer();
-        
+
         // State
         this.currentFile = null;
         this.currentFileType = null; // 'markdown' or 'json'
@@ -24,7 +24,7 @@ class ViewerApp {
         this.currentViewMode = 'tree';
         this.currentJsonData = null;
         this.codePanelCollapsed = true; // Start collapsed by default
-        
+
         // DOM elements
         this.elements = {
             // Common
@@ -40,14 +40,14 @@ class ViewerApp {
             downloadBtn: document.getElementById('downloadBtn'),
             clearBtn: document.getElementById('clearBtn'),
             faqToggle: document.getElementById('faqToggleBtn'),
-            
+
             // Markdown
             previewContainer: document.getElementById('previewContainer'),
             markdownContent: document.getElementById('markdownContent'),
             fileName: document.getElementById('fileName'),
             fileSize: document.getElementById('fileSize'),
             readingTimeText: document.getElementById('readingTimeText'),
-            
+
             // JSON
             jsonViewerContainer: document.getElementById('jsonViewerContainer'),
             jsonInput: document.getElementById('jsonInput'),
@@ -59,7 +59,7 @@ class ViewerApp {
             validateJsonBtn: document.getElementById('validateJsonBtn'),
             autoRepairBtn: document.getElementById('autoRepairBtn'),
             toggleCodePanel: document.getElementById('toggleCodePanel'),
-            
+
             // Modal
             jsonPasteModal: document.getElementById('jsonPasteModal'),
             modalJsonInput: document.getElementById('modalJsonInput'),
@@ -68,7 +68,7 @@ class ViewerApp {
             confirmPaste: document.getElementById('confirmPaste'),
             lineNumbers: document.getElementById('lineNumbers'),
         };
-        
+
         // Initialize
         this.init();
     }
@@ -82,7 +82,7 @@ class ViewerApp {
         this.loadFontSizePreference();
         this.setupVisualizerCallbacks();
         this.initLineNumbers();
-        
+
         // Initialize JSON repair
         this.jsonRepair = new JSONRepair();
     }
@@ -94,7 +94,7 @@ class ViewerApp {
         const callback = (path, value, key) => {
             this.handleNodeClick(path, value, key);
         };
-        
+
         this.treeVisualizer.setClickCallback(callback);
         this.prettierVisualizer.setClickCallback(callback);
         this.graphVisualizer.setClickCallback(callback);
@@ -135,7 +135,7 @@ class ViewerApp {
         this.elements.uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             this.elements.uploadArea.classList.remove('dragover');
-            
+
             const file = e.dataTransfer.files[0];
             this.handleFileSelect(file);
         });
@@ -198,7 +198,7 @@ class ViewerApp {
             this.elements.jsonInput.addEventListener('input', () => {
                 this.handleJsonInputChange();
             });
-            
+
             // Auto-format on paste
             this.elements.jsonInput.addEventListener('paste', (e) => {
                 this.handlePaste(e, this.elements.jsonInput);
@@ -248,13 +248,13 @@ class ViewerApp {
                 e.preventDefault();
                 this.toggleTheme();
             }
-            
+
             // Ctrl/Cmd + +: Increase font size
             if ((e.ctrlKey || e.metaKey) && e.key === '+') {
                 e.preventDefault();
                 this.increaseFontSize();
             }
-            
+
             // Ctrl/Cmd + -: Decrease font size
             if ((e.ctrlKey || e.metaKey) && e.key === '-') {
                 e.preventDefault();
@@ -323,7 +323,7 @@ class ViewerApp {
         if (!file) return;
 
         const fileType = this.detectFileType(file.name);
-        
+
         if (!fileType) {
             this.showError('Please select a valid file (.md, .markdown, .txt, or .json)');
             return;
@@ -331,13 +331,20 @@ class ViewerApp {
 
         // Read file
         const reader = new FileReader();
-        
+
         reader.onload = (e) => {
             const content = e.target.result;
-            
+
             if (fileType === 'markdown') {
                 this.renderMarkdown(content, file);
             } else if (fileType === 'json') {
+                // Track file upload
+                if (window.track) {
+                    window.track('file_uploaded', {
+                        type: file.name.split('.').pop(),
+                        size: file.size
+                    });
+                }
                 this.renderJSON(content, file);
             }
         };
@@ -356,25 +363,25 @@ class ViewerApp {
         try {
             // Parse markdown to HTML
             const html = this.markdownParser.parse(markdown);
-            
+
             // Update UI
             this.elements.markdownContent.innerHTML = html;
             this.elements.fileName.textContent = file.name;
             this.elements.fileSize.textContent = this.formatFileSize(file.size);
-            
+
             // Calculate and display reading time
             const readingTime = this.markdownParser.calculateReadingTime(markdown);
             this.elements.readingTimeText.textContent = `${readingTime} min read`;
-            
+
             // Show markdown preview, hide others
             this.elements.landingPage.classList.add('hidden');
             this.elements.jsonViewerContainer.classList.add('hidden');
             this.elements.previewContainer.classList.remove('hidden');
-            
+
             // Enable control buttons
             this.elements.downloadBtn.disabled = false;
             this.elements.clearBtn.disabled = false;
-            
+
             // Store current file info
             this.currentFile = {
                 name: file.name,
@@ -382,10 +389,10 @@ class ViewerApp {
                 html: html,
             };
             this.currentFileType = 'markdown';
-            
+
             // Smooth scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
+
         } catch (error) {
             console.error('Error rendering markdown:', error);
             this.showError('Error rendering markdown. Please check the file format.');
@@ -397,16 +404,16 @@ class ViewerApp {
      */
     renderJSONWithValidation(jsonString, file) {
         const result = this.jsonParser.parse(jsonString);
-        
+
         // Always show the JSON viewer UI
         this.elements.landingPage.classList.add('hidden');
         this.elements.previewContainer.classList.add('hidden');
         this.elements.jsonViewerContainer.classList.remove('hidden');
-        
+
         // Update JSON input textarea with the raw input
         this.elements.jsonInput.value = jsonString;
         this.updateLineNumbers();
-        
+
         if (!result.success) {
             // Show error in stats area with line highlighting
             this.currentJsonData = null;
@@ -416,28 +423,28 @@ class ViewerApp {
                 data: null,
             };
             this.currentFileType = 'json';
-            
+
             // Display error message with line number and context
             const errorLine = result.line || 'unknown';
-            
+
             // Extract context around error (5 words before and after)
             let contextSnippet = '';
             if (result.line && result.column) {
                 const lines = jsonString.split('\n');
                 const errorLineText = lines[result.line - 1] || '';
-                
+
                 // Get text around the error position
                 const beforeError = errorLineText.substring(0, result.column - 1);
                 const afterError = errorLineText.substring(result.column - 1);
-                
+
                 // Extract words (split by spaces, quotes, brackets, etc.)
                 const wordsBefore = beforeError.match(/[\w"']+/g) || [];
                 const wordsAfter = afterError.match(/[\w"']+/g) || [];
-                
+
                 // Get last 5 words before and first 5 words after
                 const contextBefore = wordsBefore.slice(-5).join(' ');
                 const contextAfter = wordsAfter.slice(0, 5).join(' ');
-                
+
                 contextSnippet = `
                     <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; font-family: monospace; font-size: 0.875rem;">
                         <div style="color: #64748b; font-size: 0.75rem; margin-bottom: 0.25rem;">Context around error:</div>
@@ -449,7 +456,7 @@ class ViewerApp {
                     </div>
                 `;
             }
-            
+
             this.elements.jsonStats.innerHTML = `
                 <div style="color: #ef4444; font-weight: 600;">
                     ❌ Invalid JSON: ${result.error}
@@ -458,19 +465,19 @@ class ViewerApp {
                 ${contextSnippet}
             `;
             this.elements.jsonStats.classList.remove('hidden');
-            
+
             // Show JSON with line numbers and error highlighting in visualization panel
             this.elements.jsonVisualization.innerHTML = this.renderJsonWithLineNumbers(jsonString, result.line);
-            
+
             // Highlight error line in textarea if possible
             if (result.line) {
                 this.highlightErrorLine(this.elements.jsonInput, result.line);
             }
-            
+
             // Enable control buttons
             this.elements.downloadBtn.disabled = true;
             this.elements.clearBtn.disabled = false;
-            
+
             return;
         }
 
@@ -531,7 +538,7 @@ class ViewerApp {
      */
     renderJSON(jsonString, file) {
         const result = this.jsonParser.parse(jsonString);
-        
+
         if (!result.success) {
             this.showError(result.error);
             return;
@@ -594,7 +601,7 @@ class ViewerApp {
     renderJsonWithLineNumbers(jsonString, errorLine) {
         const lines = jsonString.split('\n');
         const lineNumberWidth = String(lines.length).length;
-        
+
         let html = `
             <div style="background: var(--bg-secondary); border-radius: 8px; overflow: hidden; height: 100%; display: flex; flex-direction: column;">
                 <div style="padding: 1rem; background: var(--error-bg, #fee); border-bottom: 2px solid var(--error-color, #ef4444);">
@@ -607,19 +614,19 @@ class ViewerApp {
                 </div>
                 <div style="flex: 1; overflow: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6;">
                     <pre style="margin: 0; padding: 1rem; background: transparent;"><code>`;
-        
+
         lines.forEach((line, index) => {
             const lineNum = index + 1;
             const isErrorLine = errorLine && lineNum === errorLine;
             const lineNumStr = String(lineNum).padStart(lineNumberWidth, ' ');
-            
+
             // Escape HTML
             const escapedLine = line
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
-            
+
             if (isErrorLine) {
                 html += `<div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; margin-left: -1rem; padding-left: calc(1rem - 3px); margin-right: -1rem; padding-right: 1rem;">`;
                 html += `<span style="color: #ef4444; font-weight: bold; user-select: none;">${lineNumStr} ❌ </span>`;
@@ -632,12 +639,12 @@ class ViewerApp {
                 html += `</div>`;
             }
         });
-        
+
         html += `</code></pre>
                 </div>
             </div>
         `;
-        
+
         return html;
     }
 
@@ -647,16 +654,16 @@ class ViewerApp {
     highlightErrorLine(textarea, lineNumber) {
         const lines = textarea.value.split('\n');
         let charCount = 0;
-        
+
         for (let i = 0; i < lineNumber - 1 && i < lines.length; i++) {
             charCount += lines[i].length + 1; // +1 for newline
         }
-        
+
         // Select the error line
         textarea.focus();
         textarea.setSelectionRange(charCount, charCount + (lines[lineNumber - 1]?.length || 0));
         textarea.scrollTop = textarea.scrollHeight * ((lineNumber - 1) / lines.length);
-        
+
         // Show visual error marker
         const errorMarker = document.getElementById('errorMarker');
         if (errorMarker) {
@@ -664,16 +671,16 @@ class ViewerApp {
             const fontSize = 14; // 0.875rem = 14px
             const padding = 16; // var(--spacing-md)
             const lineHeightPx = lineHeight * fontSize;
-            
+
             // Calculate position
             const top = padding + (lineNumber - 1) * lineHeightPx;
             const height = lineHeightPx;
-            
+
             // Position and show marker
             errorMarker.style.top = `${top}px`;
             errorMarker.style.height = `${height}px`;
             errorMarker.classList.remove('hidden');
-            
+
             // Hide marker after 5 seconds
             setTimeout(() => {
                 errorMarker.classList.add('hidden');
@@ -717,6 +724,13 @@ class ViewerApp {
     switchViewMode(mode) {
         this.currentViewMode = mode;
 
+        // Track view change
+        if (window.track) {
+            window.track('view_changed', {
+                view: mode
+            });
+        }
+
         // Update active button
         document.querySelectorAll('.view-mode-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -733,14 +747,19 @@ class ViewerApp {
      * Handle node click in visualizer
      */
     handleNodeClick(path, value, key) {
+        // Track code helper usage
+        if (window.track) {
+            window.track('code_helper_used');
+        }
+
         // Get the full JSON data
         const jsonString = this.elements.jsonInput.value;
         const parseResult = this.jsonParser.parse(jsonString);
         const jsonData = parseResult.success ? parseResult.data : null;
-        
+
         // Update code helper with the path, value, key, and full JSON data
         this.codeHelper.update(path, value, key, jsonData);
-        
+
         // Render the code examples
         const codeHTML = this.codeHelper.renderToHTML();
         this.elements.codeHelper.innerHTML = codeHTML;
@@ -784,6 +803,11 @@ class ViewerApp {
      * Format JSON input
      */
     formatJsonInput() {
+        // Track format action
+        if (window.track) {
+            window.track('format_clicked');
+        }
+
         const result = this.jsonParser.parse(this.elements.jsonInput.value);
         if (result.success) {
             const formatted = JSON.stringify(result.data, null, 2);
@@ -800,6 +824,11 @@ class ViewerApp {
         if (!jsonString) {
             alert('Please paste some JSON first');
             return;
+        }
+
+        // Track auto-repair usage
+        if (window.track) {
+            window.track('auto_repair_clicked');
         }
 
         const result = this.jsonRepair.repair(jsonString);
@@ -833,6 +862,11 @@ class ViewerApp {
      * Validate JSON input
      */
     validateJsonInput() {
+        // Track validation
+        if (window.track) {
+            window.track('validate_clicked');
+        }
+
         const result = this.jsonParser.parse(this.elements.jsonInput.value);
         if (result.success) {
             alert('✅ Valid JSON!');
@@ -846,7 +880,7 @@ class ViewerApp {
      */
     toggleCodePanel() {
         this.codePanelCollapsed = !this.codePanelCollapsed;
-        
+
         if (this.codePanelCollapsed) {
             this.elements.codeHelperPanel.classList.add('collapsed');
             this.elements.toggleCodePanel.textContent = '▶';
@@ -881,28 +915,28 @@ class ViewerApp {
     handlePaste(event, targetElement) {
         // Prevent default paste
         event.preventDefault();
-        
+
         // Get pasted text
         const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-        
+
         // Try to parse and format the JSON
         const result = this.jsonParser.parse(pastedText);
-        
+
         if (result.success) {
             // If valid JSON, format it nicely
             const formattedJson = JSON.stringify(result.data, null, 2);
-            
+
             // Insert formatted JSON at cursor position
             const start = targetElement.selectionStart;
             const end = targetElement.selectionEnd;
             const currentValue = targetElement.value;
-            
+
             targetElement.value = currentValue.substring(0, start) + formattedJson + currentValue.substring(end);
-            
+
             // Set cursor position after inserted text
             const newPosition = start + formattedJson.length;
             targetElement.setSelectionRange(newPosition, newPosition);
-            
+
             // Trigger input event to update visualization if it's the main textarea
             if (targetElement === this.elements.jsonInput) {
                 this.handleJsonInputChange();
@@ -912,9 +946,9 @@ class ViewerApp {
             const start = targetElement.selectionStart;
             const end = targetElement.selectionEnd;
             const currentValue = targetElement.value;
-            
+
             targetElement.value = currentValue.substring(0, start) + pastedText + currentValue.substring(end);
-            
+
             const newPosition = start + pastedText.length;
             targetElement.setSelectionRange(newPosition, newPosition);
         }
@@ -926,6 +960,13 @@ class ViewerApp {
     handlePasteConfirm() {
         const jsonString = this.elements.modalJsonInput.value;
         if (jsonString.trim()) {
+            // Track JSON paste event
+            if (window.track) {
+                window.track('json_pasted', {
+                    size: jsonString.length
+                });
+            }
+
             this.hidePasteModal();
             this.renderJSONWithValidation(jsonString, null);
         } else {
@@ -939,11 +980,11 @@ class ViewerApp {
      */
     formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
-        
+
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        
+
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     }
 
@@ -953,19 +994,19 @@ class ViewerApp {
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', this.currentTheme);
-        
+
         if (this.currentTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
-        
+
         // Update button icon (if it exists, for backward compatibility)
         const icon = this.elements.themeToggle.querySelector('.icon');
         if (icon) {
             icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
         }
-        
+
         // Save preference
         localStorage.setItem('theme', this.currentTheme);
 
@@ -983,13 +1024,13 @@ class ViewerApp {
         if (savedTheme) {
             this.currentTheme = savedTheme;
             document.documentElement.setAttribute('data-theme', this.currentTheme);
-            
+
             if (this.currentTheme === 'dark') {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
-            
+
             const icon = this.elements.themeToggle.querySelector('.icon');
             if (icon) {
                 icon.textContent = this.currentTheme === 'light' ? '🌙' : '☀️';
@@ -1003,7 +1044,7 @@ class ViewerApp {
     increaseFontSize() {
         const sizes = ['normal', 'large', 'xlarge'];
         const currentIndex = sizes.indexOf(this.currentFontSize);
-        
+
         if (currentIndex < sizes.length - 1) {
             this.currentFontSize = sizes[currentIndex + 1];
             this.applyFontSize();
@@ -1016,7 +1057,7 @@ class ViewerApp {
     decreaseFontSize() {
         const sizes = ['small', 'normal', 'large', 'xlarge'];
         const currentIndex = sizes.indexOf(this.currentFontSize);
-        
+
         if (currentIndex > 0) {
             this.currentFontSize = sizes[currentIndex - 1];
             this.applyFontSize();
@@ -1029,12 +1070,12 @@ class ViewerApp {
     applyFontSize() {
         // Remove all font size classes
         document.body.classList.remove('font-small', 'font-large', 'font-xlarge');
-        
+
         // Add current font size class
         if (this.currentFontSize !== 'normal') {
             document.body.classList.add(`font-${this.currentFontSize}`);
         }
-        
+
         // Save preference
         localStorage.setItem('fontSize', this.currentFontSize);
     }
@@ -1197,17 +1238,17 @@ class ViewerApp {
         this.currentFile = null;
         this.currentFileType = null;
         this.currentJsonData = null;
-        
+
         this.elements.markdownContent.innerHTML = '';
         this.elements.jsonInput.value = '';
         this.elements.jsonVisualization.innerHTML = '<div class="visualization-placeholder"><p>📊 Your JSON visualization will appear here</p><p class="placeholder-hint">Upload a file or paste JSON to get started</p></div>';
         this.elements.codeHelper.innerHTML = '<div class="code-helper-placeholder"><p>🎯 Click on any key in the visualization</p><p class="placeholder-hint">See how to access it in JavaScript</p></div>';
         this.elements.jsonStats.classList.add('hidden');
-        
+
         this.elements.previewContainer.classList.add('hidden');
         this.elements.jsonViewerContainer.classList.add('hidden');
         this.elements.landingPage.classList.remove('hidden');
-        
+
         this.elements.fileInput.value = '';
         this.elements.downloadBtn.disabled = true;
         this.elements.clearBtn.disabled = true;
@@ -1226,7 +1267,7 @@ class ViewerApp {
     toggleFaq() {
         const container = document.getElementById('faqContainer');
         const btn = this.elements.faqToggle;
-        
+
         if (container && btn) {
             container.classList.toggle('hidden');
             btn.classList.toggle('active');
